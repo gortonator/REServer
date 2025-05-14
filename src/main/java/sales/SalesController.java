@@ -18,8 +18,7 @@ public class SalesController {
 
         // Extract Home Sale from request body
         // TO DO override Validator exception method to report better error message
-        HomeSale sale = ctx.bodyValidator(HomeSale.class)
-                            .get();
+        HomeSale sale = ctx.bodyValidator(HomeSale.class).get();
 
         // store new sale in data set
         if (homeSales.newSale(sale)) {
@@ -33,7 +32,7 @@ public class SalesController {
 
     // implements Get /sales
     public void getAllSales(Context ctx) {
-        List <HomeSale> allSales = homeSales.getAllSales();
+        List<HomeSale> allSales = homeSales.getAllSales();
         if (allSales.isEmpty()) {
             ctx.result("No Sales Found");
             ctx.status(404);
@@ -47,8 +46,7 @@ public class SalesController {
     public void getSaleByID(Context ctx, String id) {
 
         Optional<HomeSale> sale = homeSales.getSaleById(id);
-        sale.map(ctx::json)
-                .orElseGet (() -> error (ctx, "Sale not found", 404));
+        sale.map(ctx::json).orElseGet(() -> error(ctx, "Sale not found", 404));
 
     }
 
@@ -64,15 +62,21 @@ public class SalesController {
         }
     }
 
+    // Implements Get /sales/area_type/{area_type}
+    public void findSaleByarea_type(Context ctx, String area_type) {
+        List<HomeSale> sales = homeSales.getSalesByarea_type(area_type);
+        if (sales.isEmpty()) {
+            ctx.result("No sales found for this area type");
+            ctx.status(404);
+        } else {
+            ctx.json(sales);
+            ctx.status(200);
+        }
+    }
+
     private Context error(Context ctx, String msg, int code) {
         ctx.result(msg);
         ctx.status(code);
         return ctx;
     }
-
-
-
-    
-
-
 }
